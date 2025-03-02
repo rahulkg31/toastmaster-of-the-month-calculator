@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toastmasters Meeting Agenda</title>
+  <style>
+    body {
+      width: 95%;
+      margin: 0 auto;
+      padding-top: 10px;
+      font-family: 'Trebuchet MS', 'Lucida Sans', Arial, sans-serif;
+      font-size: 14px;
+      background: linear-gradient(to right, #f3f9ff, #c9e8ff);
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .info {
+      margin-bottom: 20px;
+    }
+
+    .infoTitle {
+      font-size: 25px;
+      font-weight: bold;
+      color: rgb(0, 54, 194);
+    }
+
+   #resultsContainer{
+      display: none;
+    }
+    
+    
+    
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: linear-gradient(to right, #1e88e5, #1565c0);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s ease;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background: #005bb5;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      box-sizing: border-box;
+      padding: 10px;
+      margin-bottom: 15px;
+      background-color: #e9f7ff;
+      border: 1px solid #0078d7;
+      border-radius: 5px;
+      color: #333;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      border-radius: 5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #000000;
+      text-align: center;
+      padding: 12px;
+    }
+
+    th {
+      background-color: #0078d7;
+      color: white;
+    }
+    
+    tr:nth-child(even) {
+       background-color: #ffffff;
+    }
+
+    tr {
+      background-color: #f3f9ff;
+    }
+
+    .header-table td {
+      padding: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .header-title {
+      font-size: 22px;
+      background: #0078d7;
+      color: white;
+    }
+
+    .header-highlight {
+      color: #d9534f;
+    }
+
+
+
+.editable-div {
+  width: 100%;
+  max-height: 600px;
+  overflow-y: auto; 
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+.editable-div:focus {
+    outline: none;
+    border-color: #5c8eb8;
+}
+.key {
+    color: #3b5998;  /* Blue color for the keys */
+    font-weight: bold;
+}
+.category {
+    color: red;  /* Blue color for the keys */
+    font-weight: bold;
+}
+
+.help-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .help-icon {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: #0078d7;
+      color: white;
+      text-align: center;
+      line-height: 18px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+
+    .help-text {
+      display: none;
+      background-color: #ffffff;
+      color: #333333;
+      border: 1px solid #ddd;
+      padding: 10px;
+      position: absolute;
+      left: 0; 
+      top: 30px; 
+      width: 800px;
+      z-index: 1000;
+      font-size: 0.9em;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      white-space: normal;
+      border-radius: 5px;
+    }
+
+    .help-text::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: 10px; 
+      border-width: 5px;
+      border-style: solid;
+      border-color: transparent transparent #ddd transparent;
+    }
+
+    .help-container:hover .help-text {
+      display: block;
+    }
+
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+  <div class="info">
+      <img src="https://raw.githubusercontent.com/rahulkg31/toastmasters-agenda-generator/main/logo.png" height="70" style="float: right;">
+    <div class="infoTitle">Toastmaster of the Month</div>
+        <div class="infoDescription">
+            <p>This recognition is given to a club member who has shown exceptional dedication, performance, and contribution to the club over the course of a month. It motivates members to participate actively and acknowledges their hard work and achievements.</p>
+  </div>
+  
+  <label class="text" for="textInput">Enter meeting details:
+  <span class="help-container">
+    <span class="help-icon">?</span>
+    <div class="help-text">
+      <strong>General:</strong><br>
+      - Meeting Attendance: +20 points per meeting attended.<br>
+      - 100% Attendance: +50 points.<br>
+      - Backouts: -30 points.<br>
+      - Late Comer (after 10:30 am): -20 points.<br>
+      - Leaving Early (before 12:45 pm): -10 points.<br>
+      - On-the-Spot Roles: +10 points for stepping in and fulfilling a role spontaneously.<br><br>
+      <strong>Participation:</strong><br>
+      Role Fulfillment: Points for roles taken during the month:<br>
+      - Toastmaster of the Day: 40 points.<br>
+      - General Evaluator: 30 points.<br>
+      - Table Topics Master: 30 points.<br>
+      - Prepared Speaker: 30 points.<br>
+      - Speech Evaluator: 20 points.<br>
+      - Table Topics Speaker: 20 points.<br>
+      - Table Topics Evaluator: 20 points.<br>
+      - Timer: 20 points.<br>
+      - Ah Counter: 20 points.<br>
+      - Grammarian: 20 points.<br>
+      - Joke Master: 20 points.<br><br>
+      <strong>Recognition:</strong><br>
+      - Awards Won for Roles Taken: 30 points for each award won.<br><br>
+      <strong>Final Score = General Score + Participation Score + Recognition Score</strong><br><br>
+      The member with the highest Final Score at the end of the month will be awarded the Toastmaster of the Month award.<br>
+    </div>
+  </span>
+</label>
+  
+  <div id="meetingData" class="editable-div" contenteditable="true">
+  <span class="category">ROLE PLAYERS DETAILS</span>
+    
+  <span class="category">Meeting #1</span>
+  <span class="key">Toastmaster of The Day:</span> Esha
+  <span class="key">Joke Master:</span> Omkar
+  <span class="key">General Evaluator:</span> Omkar
+  <span class="key">Table Topics Master:</span> Nikhil  
+  <span class="key">Timer:</span> Nikhil
+  <span class="key">Ah Counter:</span> Garima
+  <span class="key">Grammarian:</span> Jatin
+  <span class="key">Speaker:</span> Tanvi, Farhan, Ishita
+  <span class="key">Evaluator:</span> Yash, Bhavya, Farhan
+  <span class="key">Table Topics Speaker:</span> Garima, Lakshya, Nikhil
+  <span class="key">Table Topics Evaluator:</span> Yash
+  <span class="key">Winner:</span> Yash
+  <span class="key">Late Comer:</span> Charvi
+  <span class="key">Early Leave:</span> Lakshya
+  <span class="key">Back Out:</span> Lakshya
+  <span class="key">Role Taken At Last Moment:</span> Kavya
+  <span class="key">Member Attendee Without Any Role:</span> Bhavya, Esha, Riya
+
+  <span class="category">Meeting #2</span>
+  <span class="key">Toastmaster of The Day:</span> Omkar
+  <span class="key">Joke Master:</span> Omkar
+  <span class="key">General Evaluator:</span> Bhavya
+  <span class="key">Table Topics Master:</span> Aarav  
+  <span class="key">Timer:</span> Esha
+  <span class="key">Ah Counter:</span> Garima
+  <span class="key">Grammarian:</span> Bhavya
+  <span class="key">Speaker:</span> Priya, Sahil, Meera
+  <span class="key">Evaluator:</span> Kavya, Sahil
+  <span class="key">Table Topics Speaker:</span> Ishita, Tanvi, Riya
+  <span class="key">Table Topics Evaluator:</span> Charvi
+  <span class="key">Winner:</span> Ishita, Farhan, Charvi
+  <span class="key">Late Comer:</span> Yash
+  <span class="key">Early Leave:</span> Farhan
+  <span class="key">Back Out:</span> Garima
+  <span class="key">Role Taken At Last Moment:</span> Riya
+  <span class="key">Member Attendee Without Any Role:</span> Aarav
+
+  <span class="category">Meeting #3</span>
+  <span class="key">Toastmaster of The Day:</span> Ishita
+  <span class="key">Joke Master:</span> Kavya
+  <span class="key">General Evaluator:</span> Omkar
+  <span class="key">Table Topics Master:</span> Bhavya  
+  <span class="key">Timer:</span> Kavya
+  <span class="key">Ah Counter:</span> Jatin
+  <span class="key">Grammarian:</span> Garima
+  <span class="key">Speaker:</span> Meera, Yash
+  <span class="key">Evaluator:</span> Kavya, Garima
+  <span class="key">Table Topics Speaker:</span> Riya, Lakshya
+  <span class="key">Table Topics Evaluator:</span> Lakshya
+  <span class="key">Winner:</span> Dhruv, Charvi
+  <span class="key">Late Comer:</span> Bhavya
+  <span class="key">Early Leave:</span> Ishita
+  <span class="key">Back Out:</span> Lakshya
+  <span class="key">Role Taken At Last Moment:</span> Tanvi
+  <span class="key">Member Attendee Without Any Role:</span> Riya
+
+  <span class="category">Meeting #4</span>
+  <span class="key">Toastmaster of The Day:</span> Riya
+  <span class="key">Joke Master:</span> Nikhil
+  <span class="key">General Evaluator:</span> Meera
+  <span class="key">Table Topics Master:</span> Ishita  
+  <span class="key">Timer:</span> Garima
+  <span class="key">Ah Counter:</span> Ishita
+  <span class="key">Grammarian:</span> Dhruv
+  <span class="key">Speaker:</span> Jatin, Esha
+  <span class="key">Evaluator:</span> Esha, Garima, Tanvi
+  <span class="key">Table Topics Speaker:</span> Tanvi
+  <span class="key">Table Topics Evaluator:</span> Aarav
+  <span class="key">Winner:</span> Meera, Tanvi, Dhruv
+  <span class="key">Late Comer:</span> Dhruv
+  <span class="key">Early Leave:</span> Esha
+  <span class="key">Back Out:</span> Kavya
+  <span class="key">Role Taken At Last Moment:</span> Jatin
+  <span class="key">Member Attendee Without Any Role:</span> Tanvi, Lakshya, Jatin  
+  
+  </div>
+
+  <button onclick="processData()">Calculate Scores</button>
+  
+    <div id="resultsContainer" style="padding: 20px; background: white;">
+    <table id="resultsTable">
+    <thead>
+      <tr>
+        <th>Member</th>
+        <th>General Score</th>
+        <th>Participation Score</th>
+        <th>Recognition Score</th>
+        <th>Attendance Score</th>
+        <th>Final Score</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  </div>
+
+
+  <script>
+   function processData() {
+      const data = document.getElementById("meetingData").innerText;
+      const meetings = data.split("Meeting #").slice(1);
+      const numberOfMeetings = meetings.length;
+      const attendanceMap = {};
+      const scores = {};
+
+      const pointRules = {
+        participation: {
+          "Toastmaster of The Day": 40,
+          "General Evaluator": 30,
+          "Joke Master": 20,
+          "Table Topics Master": 30,
+          "Table Topics Evaluator": 20,
+          "Timer": 20,
+          "Ah Counter": 20,
+          "Grammarian": 20,
+          "Evaluator": 20,
+          "Speaker": 30,
+          "Table Topics Speaker": 20,
+          "Role Taken At Last Moment": 10
+        },
+        general: {
+          "Late Comer": -20,
+          "Early Leave": -10,
+          "Back Out": -30          
+        },
+        recognition: {
+          "Winner": 30
+        },
+        attendance:{
+          "Member Attendee Without Any Role": 20,
+          "Full Attendance": 50
+        }
+      };
+      
+      
+
+      meetings.forEach(meeting => {
+        const lines = meeting.split("\n").filter(line => line.trim());
+        let generalScores = {};
+        let participationScores = {};
+        let recognitionScores = {};
+        let attendance = new Set();
+
+        lines.forEach(line => {
+          const [key, value] = line.split(":").map(s => s.trim());
+          if (!key || !value) return;
+          
+          
+
+          if (key in pointRules.participation) {
+            value.split(",").map(member => formatName(member.trim())).forEach(member => {
+              participationScores[member] = (participationScores[member] || 0) + pointRules.participation[key];
+              attendance.add(member);
+            });
+          } else if (key in pointRules.recognition) {
+            value.split(",").map(member => formatName(member.trim())).forEach(member => {
+              recognitionScores[member] = (recognitionScores[member] || 0) + pointRules.recognition[key];
+              attendance.add(member);
+            });
+          } else if (key in pointRules.general) {
+            value.split(",").map(member => formatName(member.trim())).forEach(member => {
+              generalScores[member] = (generalScores[member] || 0) + pointRules.general[key];
+              attendance.add(member);
+            });
+          }
+          else if (key in pointRules.attendance) {
+            value.split(",").map(member => formatName(member.trim())).forEach(member => {
+              attendance.add(member);
+            });
+          }
+        });
+
+        Object.entries(generalScores).forEach(([member, score]) => {
+          if (!scores[member]) scores[member] = { general: 0, participation: 0, recognition: 0, attendance:0,final: 0 };
+          scores[member].general += score;
+        });
+
+        Object.entries(participationScores).forEach(([member, score]) => {
+          if (!scores[member]) scores[member] = { general: 0, participation: 0, recognition: 0,attendance:0, final: 0 };
+          scores[member].participation += score;
+        });
+
+        Object.entries(recognitionScores).forEach(([member, score]) => {
+          if (!scores[member]) scores[member] = { general: 0, participation: 0, recognition: 0, attendance:0,final: 0 };
+          scores[member].recognition += score;
+        });
+        
+        attendance.forEach((member) => {
+        	attendanceMap[member] = (attendanceMap[member] || 0) + 1;
+	});
+      });
+
+	Object.entries(attendanceMap).forEach(([member, count]) => {
+          if (!scores[member]) scores[member] = { general: 0, participation: 0, recognition: 0, attendance:0, final: 0 };
+          console.log(member, count)
+           scores[member].attendance += count * pointRules.attendance["Member Attendee Without Any Role"];
+           if (count ==  numberOfMeetings) scores[member].attendance += pointRules.attendance["Full Attendance"];
+        });
+        
+      const sortedScores = Object.entries(scores)
+        .map(([member, { general, participation, recognition, attendance}]) => ({
+          member,
+          general,
+          participation,
+          recognition,
+          attendance,
+          final: general + participation + recognition + attendance
+        }))
+        .sort((a, b) => b.final - a.final);
+
+      const tbody = document.querySelector("#resultsTable tbody");
+      tbody.innerHTML = "";
+
+      sortedScores.forEach(({ member, general, participation, recognition, attendance, final }) => {
+        const row = `<tr>
+          <td>${member}</td>
+          <td>${general}</td>
+          <td>${participation}</td>
+          <td>${recognition}</td>
+          <td>${attendance}</td>
+          <td>${final}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+
+      // Show table
+      document.getElementById("resultsContainer").style.display = "block";
+    }
+
+  function formatName(name) {
+      name = name.trim();
+      if (!name.startsWith("TM ")) {
+        return "TM " + name;
+      }
+      return name;
+    }
+  
+  
+    
+
+  </script>
+</body>
+</html>
